@@ -1,14 +1,14 @@
 "use client";
 
-import { Box, Button } from "@chakra-ui/react";
-import { signIn } from "next-auth/react";
+import { SubmitButton } from "@/components";
+import { Box } from "@chakra-ui/react";
+import { signIn, signOut } from "next-auth/react";
 
 export default function Home() {
   return (
     <Box>
-      <form onSubmit={async () => signIn()}>
-        <Button type="submit">sign ina</Button>
-      </form>
+      <SubmitButton action={() => signIn()}>Sign In</SubmitButton>
+      <SubmitButton action={() => signOut()}>Sign Out</SubmitButton>
     </Box>
   );
 }
