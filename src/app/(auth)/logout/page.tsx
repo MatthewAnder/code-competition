@@ -1,19 +1,35 @@
-import { Box, Button, Center, Heading, VStack } from "@chakra-ui/react";
-import { signOut } from "auth";
+import { lucia, validateRequest } from "@/auth";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
-const Logout = () => {
-  const handleLogout = async () => {
-    "use server";
-    await signOut({ redirectTo: "/" });
-  };
+export default async function Page() {
   return (
-    <VStack>
-      <Heading>Are you sure you want to sign out?</Heading>
-      <form action={handleLogout}>
-        <Button type="submit">Sign Out</Button>
-      </form>
-    </VStack>
+    <form action={logout}>
+      <button>Sign out</button>
+    </form>
   );
-};
+}
 
-export default Logout;
+async function logout(): Promise<ActionResult> {
+  "use server";
+  const { session } = await validateRequest();
+  if (!session) {
+    return {
+      error: "Unauthorized",
+    };
+  }
+
+  await lucia.invalidateSession(session.id);
+
+  const sessionCookie = lucia.createBlankSessionCookie();
+  cookies().set(
+    sessionCookie.name,
+    sessionCookie.value,
+    sessionCookie.attributes
+  );
+  return redirect("/login");
+}
+
+interface ActionResult {
+  error: string | null;
+}
