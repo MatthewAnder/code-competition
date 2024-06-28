@@ -1,14 +1,17 @@
-"use client";
+import { redirect } from "next/navigation";
+import { validateRequest } from "@/auth";
+import { Heading } from "@chakra-ui/react";
 
-import { Box, Button } from "@chakra-ui/react";
-import { signIn } from "next-auth/react";
-
-export default function Home() {
+const Home = async () => {
+  const { user } = await validateRequest();
+  if (!user) {
+    return redirect("/login");
+  }
   return (
-    <Box>
-      <form onSubmit={async () => signIn()}>
-        <Button type="submit">sign ina</Button>
-      </form>
-    </Box>
+    <>
+      <Heading>Hi, {user.id}</Heading>
+    </>
   );
-}
+};
+
+export default Home;
